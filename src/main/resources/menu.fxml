@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.Button?>
+<StackPane styleClass="stackpane" stylesheets="styles.css" xmlns="http://javafx.com/javafx/11.0.1"
+           xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.callumbirks.jfx.MenuController">
+    <VBox styleClass="vbox1">
+        <Text styleClass="title" text="SNAKE PATHFINDER"/>
+        <VBox styleClass="vbox2">
+            <Button onAction="#play" text="Play"/>
+            <Button onAction="#quit" text="Quit"/>
+        </VBox>
+    </VBox>
+</StackPane>

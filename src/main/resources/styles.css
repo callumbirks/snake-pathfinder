@@ -1,0 +1,19 @@
+.stackpane {
+    -fx-alignment:center;
+    -fx-background-color:BLACK;
+}
+
+.vbox1 {
+    -fx-alignment:center;
+    -fx-spacing:80px;
+}
+
+.vbox2 {
+    -fx-alignment:center;
+    -fx-spacing:32px;
+}
+
+.title {
+    -fx-fill:LIME;
+    -fx-font-size:68px;
+}
