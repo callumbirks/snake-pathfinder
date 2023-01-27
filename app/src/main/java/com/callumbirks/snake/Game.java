@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Random;
 
 public class Game {
-    private Snake snake;
-    private Food food;
+    private final Snake snake;
+    private final Food food;
     private final int WIDTH;
     private final int HEIGHT;
     private static final Random rand = new Random();
-    private AStar aStar;
+    private final AStar aStar;
 
-    public Game(int width, int height, int pixelSize) {
-        snake = new Snake(5, 5, pixelSize);
+    public Game(int width, int height) {
+        snake = new Snake(5, 5);
         WIDTH = width;
         HEIGHT = height;
         food = new Food();
@@ -26,11 +26,15 @@ public class Game {
     public void updatePath() {
         aStar.setStart(snake.getX(), snake.getY());
         aStar.setEnd(food.getX(), food.getY());
-        for(SnakePart part : snake.getBody()) {
-            if(!part.equals(snake.getHead()))
-                aStar.setWall(part.getX(), part.getY(), true);
+        for(SnakePart part : snake.getBody(false)) {
+            aStar.setWall(part.getX(), part.getY(), true);
         }
         aStar.run();
+    }
+
+    public void step() {
+        updatePath();
+        moveSnake();
     }
 
     public void moveSnake() {
@@ -46,6 +50,8 @@ public class Game {
             snake.updatePartDirections();
             snake.setDirection(newDirection);
             snake.move();
+            if(checkFood())
+                eat();
         }
     }
 
@@ -68,7 +74,6 @@ public class Game {
         snake.eat();
         food.setPos(generateFoodPos());
         resetWalls();
-        updatePath();
     }
 
     private void resetWalls() {
@@ -79,18 +84,14 @@ public class Game {
         }
     }
 
-    public boolean isSnakeCrashed() {
+    public boolean over() {
         if(!isSnakeInBounds())
             return true;
-        for(SnakePart part : snake.getBody()) {
-            if(!part.equals(snake.getHead())) {
-                if (part.getX() == snake.getX() && part.getY() == snake.getY())
-                    return true;
-            }
+        for(SnakePart part : snake.getBody(false)) {
+            if (part.getX() == snake.getX() && part.getY() == snake.getY())
+                return true;
         }
-        if(aStar.getPath() == null)
-            return true;
-        return false;
+        return aStar.getPath() == null;
     }
 
     public Snake getSnake() {
@@ -105,20 +106,24 @@ public class Game {
         return (snake.getX() == food.getX() && snake.getY() == food.getY());
     }
 
+    public static boolean inBounds(int w, int h, int x, int y) {
+        return !(x < 0 ||
+                y < 0 ||
+                x > w - 1 ||
+                y > h - 1);
+    }
     private boolean isSnakeInBounds() {
-        return !(snake.getX() < 0 ||
-                snake.getY() < 0 ||
-                snake.getX() > WIDTH - 1 ||
-                snake.getY() > HEIGHT - 1);
+        return inBounds(WIDTH, HEIGHT, snake.getX(), snake.getY());
     }
 
     private int[] generateFoodPos() {
         int foodX;
         int foodY;
+        long positionsTried = 0;
         do {
             foodX = rand.nextInt(WIDTH);
             foodY = rand.nextInt(HEIGHT);
-        } while(insideSnake(foodX, foodY));
+        } while(insideSnake(foodX, foodY) && positionsTried++ < (long) WIDTH * HEIGHT);
         return new int[] { foodX, foodY };
     }
 

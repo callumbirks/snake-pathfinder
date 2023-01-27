@@ -5,9 +5,9 @@ import java.util.List;
 
 public class Snake {
     private final SnakePart head;
-    private List<SnakePart> body;
+    private final List<SnakePart> body;
 
-    public Snake(int x, int y, int pixelSize) {
+    public Snake(int x, int y) {
         head = new SnakePart(x, y, Direction.RIGHT);
         body = new ArrayList<>();
         body.add(head);
@@ -29,9 +29,11 @@ public class Snake {
         return body.size();
     }
 
-    public List<SnakePart> getBody() {
-        return body;
+    public List<SnakePart> getBody(boolean includeHead) {
+        return includeHead ? body : body.stream().filter(snakePart -> snakePart != head).toList();
     }
+
+    public List<SnakePart> getBody() { return getBody(true); }
 
     public void eat() {
         SnakePart lastPart = body.get(body.size() - 1);
@@ -72,16 +74,16 @@ public class Snake {
     private int calculateNewPartX(Direction direction, int x) {
         return switch(direction) {
             case UP, DOWN -> x;
-            case RIGHT -> x -= 1;
-            case LEFT -> x += 1;
+            case RIGHT -> x - 1;
+            case LEFT -> x + 1;
         };
     }
 
     private int calculateNewPartY(Direction direction, int y) {
         return switch(direction) {
             case LEFT, RIGHT -> y;
-            case UP -> y += 1;
-            case DOWN -> y -= 1;
+            case UP -> y + 1;
+            case DOWN -> y - 1;
         };
     }
 }

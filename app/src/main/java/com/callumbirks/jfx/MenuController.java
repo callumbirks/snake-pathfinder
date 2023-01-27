@@ -1,7 +1,5 @@
 package com.callumbirks.jfx;
 
-import javafx.event.ActionEvent;
-
 import java.io.IOException;
 
 public class MenuController {

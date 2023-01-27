@@ -33,16 +33,15 @@ public class GameController implements Initializable {
 
         gc = canvas.getGraphicsContext2D();
 
-        game = new Game(width, height, PIXEL_SIZE);
+        game = new Game(width, height);
 
         game.updatePath();
 
         timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.getKeyFrames().add(new KeyFrame(Duration.millis(20), e -> {
-            if(game.isSnakeCrashed()) pauseTimeline();//toMenu();
-            if(game.checkFood()) game.eat();
-            game.moveSnake();
+            if(game.over()) pauseTimeline();//toMenu();
+            game.step();
             render();
         }));
         canvas.requestFocus();
