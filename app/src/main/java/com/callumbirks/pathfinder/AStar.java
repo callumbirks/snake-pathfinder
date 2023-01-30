@@ -88,6 +88,15 @@ public class AStar {
         return grid[x][y].isWall();
     }
 
+    // Reset all walls (to not be walls)
+    public void resetWalls() {
+        for(int x = 0; x < getGridWidth(); x++) {
+            for(int y = 0; y < getGridHeight(); y++) {
+                grid[x][y].setWall(false);
+            }
+        }
+    }
+
     // Check whether the node at the given x and y co-ords is the start node
     public boolean isStart(int x, int y) {
         return grid[x][y].equals(start);

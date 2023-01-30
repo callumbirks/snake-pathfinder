@@ -3,7 +3,6 @@ package com.callumbirks.snake;
 import com.callumbirks.pathfinder.AStar;
 import com.callumbirks.pathfinder.Node;
 
-import java.util.List;
 import java.util.Random;
 
 public class Game {
@@ -23,72 +22,65 @@ public class Game {
         aStar = new AStar(width, height);
     }
 
+    public void step() {
+        updatePath();
+        moveSnake();
+        if(checkFood())
+            eat();
+    }
+
     public void updatePath() {
+        aStar.resetWalls();
         aStar.setStart(snake.getX(), snake.getY());
         aStar.setEnd(food.getX(), food.getY());
         for(SnakePart part : snake.getBody(false)) {
-            aStar.setWall(part.getX(), part.getY(), true);
+            aStar.setWall(part.x, part.y, true);
         }
         aStar.run();
     }
 
-    public void step() {
-        updatePath();
-        moveSnake();
-    }
-
     public void moveSnake() {
-        List<Node> path = aStar.getPath();
-        if(path != null) {
-            Direction newDirection = null;
+        Direction newDirection = snake.getDirection();
+        if(aStar.getPath() != null && aStar.getPath().size() > 1) {
+            Node next = aStar.getPath().get(1);
             try {
-                newDirection = calculateDirection(path);
+                newDirection = calcDirection(next);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            path.remove(0);
-            snake.updatePartDirections();
-            snake.setDirection(newDirection);
-            snake.move();
-            if(checkFood())
-                eat();
         }
+        snake.move(newDirection);
     }
 
-    private Direction calculateDirection(List<Node> path) throws Exception {
-        if(path.size() <= 1)
-            return snake.getDirection();
-        if(path.get(1).getY() == snake.getY() - 1)
+    private Direction calcDirection(Node next) throws Exception {
+        // Next node in path is above Snake
+        if(next.getY() == snake.getY() - 1)
             return Direction.UP;
-        else if(path.get(1).getX() == snake.getX() + 1)
+        // ... to the right
+        else if(next.getX() == snake.getX() + 1)
             return Direction.RIGHT;
-        else if(path.get(1).getY() == snake.getY() + 1)
+        // ... below
+        else if(next.getY() == snake.getY() + 1)
             return Direction.DOWN;
-        else if(path.get(1).getX() == snake.getX() - 1)
+        // ... to the left
+        else if(next.getX() == snake.getX() - 1)
             return Direction.LEFT;
         else
             throw new Exception("Path is not adjacent to snake head");
     }
 
     public void eat() {
-        snake.eat();
+        snake.grow();
         food.setPos(generateFoodPos());
-        resetWalls();
-    }
-
-    private void resetWalls() {
-        for(int i = 0; i < WIDTH; i++) {
-            for(int j = 0; j < HEIGHT; j++) {
-                aStar.setWall(i, j, false);
-            }
-        }
     }
 
     public boolean over() {
+        if(aStar.getPath() == null || aStar.getPath().size() == 0)
+            return true;
         if(!isSnakeInBounds())
             return true;
         for(SnakePart part : snake.getBody(false)) {
-            if (part.getX() == snake.getX() && part.getY() == snake.getY())
+            if (part.x == snake.getX() && part.y == snake.getY())
                 return true;
         }
         return aStar.getPath() == null;
@@ -129,7 +121,7 @@ public class Game {
 
     private boolean insideSnake(int foodX, int foodY) {
         for(SnakePart part : snake.getBody()) {
-            if(part.getX() == foodX && part.getY() == foodY)
+            if(part.x == foodX && part.y == foodY)
                 return true;
         }
         return false;
