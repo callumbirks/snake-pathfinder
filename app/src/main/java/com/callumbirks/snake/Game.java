@@ -12,6 +12,8 @@ public class Game {
     private final int HEIGHT;
     private static final Random rand = new Random();
     private final AStar aStar;
+    // Public target for GameController::render()
+    public int[] target = new int[] { 0, 0 };
 
     public Game(int width, int height) {
         snake = new Snake(5, 5);
@@ -32,11 +34,23 @@ public class Game {
     public void updatePath() {
         aStar.resetWalls();
         aStar.setStart(snake.getX(), snake.getY());
-        aStar.setEnd(food.getX(), food.getY());
         for(SnakePart part : snake.getBody(false)) {
             aStar.setWall(part.x, part.y, true);
         }
-        aStar.run();
+        // Try and pathfind food, otherwise pathfind random location
+        // We can pathfind food again when a path is available.
+        target[0] = food.getX();
+        target[1] = food.getY();
+        // max attempts to stop infinite loop
+        int numAttempts = 0;
+        while(numAttempts++ < 20 && !pathfindTarget(target[0], target[1])) {
+            target = generateFoodPos();
+        }
+    }
+
+    private boolean pathfindTarget(int x, int y) {
+        aStar.setEnd(x, y);
+        return aStar.run();
     }
 
     public void moveSnake() {

@@ -49,11 +49,17 @@ public class GameController implements Initializable {
     }
 
     private void render() {
+        // Clear canvas
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        // Draw snake
         gc.setFill(Color.LIME);
         for(SnakePart part : game.getSnake().getBody()) {
             gc.fillRect(part.x * PIXEL_SIZE, part.y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
         }
+        // Draw target
+        gc.setFill(Color.RED);
+        gc.fillRect(game.target[0] * PIXEL_SIZE, game.target[1] * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
+        // Draw food
         gc.setFill(Color.WHITE);
         gc.fillOval(game.getFood().getX() * PIXEL_SIZE, game.getFood().getY() * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE);
     }
