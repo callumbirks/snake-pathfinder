@@ -162,7 +162,7 @@ public class AStar {
         instantiated. If the optimal path is found by this algorithm, it will be stored in the
         'path' variable, which can be obtained using the 'getPath' function.
      */
-    public void run() {
+    public boolean run() {
         // If the start node or end node are null, throw an IllegalArgumentException with the relevant message
         if(start == null)
             throw new IllegalArgumentException("Start node has not been set.");
@@ -210,7 +210,7 @@ public class AStar {
                 // Run the reconstructPath function to reconstruct the path and assign the result to the 'path' variable
                 path = reconstructPath(current);
                 // Exit the function early as the optimal path has been located
-                return;
+                return true;
             }
             // Remove the current node from the openSet (It does not need to be tested again)
             openSet.remove(current);
@@ -243,6 +243,7 @@ public class AStar {
             will be null
          */
         path = null;
+        return false;
     }
 
     // Calculate the h(n) value for a node at a given co-ordinate and given the end node
